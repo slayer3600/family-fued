@@ -3,12 +3,12 @@
     <div v-if="getIsSettingsVisible">
       <v-row>
         <v-col>
-          <v-card height="150">
+          <v-card min-height="150">
             <v-card-title class="grey lighten-2">
               Display Type
             </v-card-title>
             <v-card-text class="pa-2">
-              If you are a host, the answers will be automatically revealed.
+              If you are a host, all answers will be revealed.
             </v-card-text>
             <v-radio-group class="pl-2" mandatory v-model="isHost" row>
               <v-radio label="Player" :value="false"></v-radio>
@@ -17,7 +17,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card height="150">
+          <v-card min-height="150">
             <v-card-title class="grey lighten-2">
               New Game Options
             </v-card-title>
