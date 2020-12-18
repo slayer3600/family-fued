@@ -24,5 +24,4 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Links
-```
-https://familyfued.chickycoop.com/
+[Family Fued](https://familyfued.chickycoop.com/)
