@@ -6,9 +6,9 @@
     <v-simple-table>
       <thead>
         <tr>
-          <!-- <th class="text-left">
+          <th class="text-left">
             Rank
-          </th> -->
+          </th>
           <th class="text-left">
             Response
           </th>
@@ -24,7 +24,7 @@
       </thead>
       <tbody>
         <tr v-for="(response, index) in Question.responses" :key="index">
-          <!-- <td>{{ index + 1 }}</td> -->
+          <td>{{ index + 1 }}</td>
           <td>
             <div>
               {{ isResultDisplayed(response.response, response.revealed) }}

@@ -3,7 +3,7 @@
     <div v-if="getIsSettingsVisible">
       <v-row>
         <v-col>
-          <v-card min-height="150">
+          <v-card min-height="165">
             <v-card-title class="grey lighten-2">
               Display Type
             </v-card-title>
@@ -17,7 +17,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card min-height="150">
+          <v-card min-height="165">
             <v-card-title class="grey lighten-2">
               New Game Options
             </v-card-title>
@@ -26,7 +26,7 @@
             </v-card-text>
             <v-card-actions>
               <v-btn color="primary" @click="updateRandomQuestion"
-                >New Random Question</v-btn
+                >Next Question</v-btn
               >
               <v-spacer></v-spacer>
               <v-dialog
