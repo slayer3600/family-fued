@@ -6,9 +6,9 @@
     <v-simple-table>
       <thead>
         <tr>
-          <th class="text-left">
+          <!-- <th class="text-left">
             Rank
-          </th>
+          </th> -->
           <th class="text-left">
             Response
           </th>
@@ -24,7 +24,7 @@
       </thead>
       <tbody>
         <tr v-for="(response, index) in Question.responses" :key="index">
-          <td>{{ index + 1 }}</td>
+          <!-- <td>{{ index + 1 }}</td> -->
           <td>
             <div>
               {{ isResultDisplayed(response.response, response.revealed) }}
@@ -34,15 +34,16 @@
           <td>
             <div v-if="!Host">
               <v-btn
-                color="success"
+                color="primary"
                 @click="response.revealed = !response.revealed"
+                icon
                 ><div v-if="response.revealed">
-                  Hide
+                  <v-icon>mdi-eye-off</v-icon>
                 </div>
                 <div v-else>
-                  Reveal
-                </div></v-btn
-              >
+                  <v-icon>mdi-eye</v-icon>
+                </div>
+              </v-btn>
             </div>
           </td>
         </tr>

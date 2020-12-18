@@ -12,7 +12,8 @@ export default new Vuex.Store({
       questionkey: -1,
       question: "",
       responses: []
-    }
+    },
+    isSettingsVisible: false
   },
   getters: {
     getScore: state => {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     },
     getCurrentQuestionKey: state => {
       return state.currentQuestion.questionkey;
+    },
+    getIsSettingsVisible: state => {
+      return state.isSettingsVisible;
     }
   },
   mutations: {
@@ -72,11 +76,14 @@ export default new Vuex.Store({
           revealed: false
         });
       });
+    },
+    SET_IS_SETTINGS_VISIBLE: (state, payload) => {
+      state.isSettingsVisible = payload;
     }
   },
   actions: {
-    changeScore: (context, payload) => {
-      context.commit("CHANGE_PRIVATE_SCORE", payload);
+    updateIsSettingsVisible: (context, payload) => {
+      context.commit("SET_IS_SETTINGS_VISIBLE", payload);
     },
     getQuestionData: async context => {
       const data = await axios.get("./FamilyFued.json");
