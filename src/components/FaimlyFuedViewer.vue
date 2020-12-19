@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="getIsSettingsVisible">
+    <div v-show="getIsSettingsVisible">
       <v-row>
         <v-col>
           <v-card min-height="165">
@@ -52,6 +52,7 @@
                       label="Enter Question ID"
                       id="id"
                       v-model="questionIdLookup"
+                      autofocus
                     ></v-text-field>
                   </v-card-text>
 
@@ -93,7 +94,7 @@ export default {
   data: () => ({
     isLoading: true,
     isHost: false,
-    questionIdLookup: 0,
+    questionIdLookup: null,
     dialog: false
   }),
 
@@ -127,6 +128,15 @@ export default {
     ]),
     scoreViaState() {
       return this.$store.state.score;
+    }
+  },
+
+  watch: {
+    dialog: function(visible) {
+      //cannot be an arrow function
+      if (visible) {
+        this.questionIdLookup = null;
+      }
     }
   },
 
