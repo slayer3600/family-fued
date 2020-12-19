@@ -91,12 +91,14 @@ export default {
     QuestionViewer
   },
 
-  data: () => ({
-    isLoading: true,
-    isHost: false,
-    questionIdLookup: null,
-    dialog: false
-  }),
+  data() {
+    return {
+      isLoading: true,
+      isHost: false,
+      questionIdLookup: null,
+      dialog: false
+    };
+  },
 
   methods: {
     ...mapMutations(["CHANGE_PRIVATE_SCORE"]),
@@ -114,7 +116,19 @@ export default {
     findQuestion() {
       this.updateQuestionById(this.questionIdLookup);
       this.dialog = false;
+    },
+    submitPubNubMessage() {
+      this.$pnPublish({
+        channel: "familyfeud",
+        message: {
+          text: "hello from family fued",
+          uuid: "jeremy123"
+        }
+      });
     }
+    // receptor(msg) {
+    //   console.log(`sent - ${msg.message}`);
+    // }
   },
 
   computed: {
@@ -145,6 +159,12 @@ export default {
     // this.$store.dispatch("getQuestionData");
     await this.getQuestionData();
     this.updateRandomQuestion();
+
+    // await this.$pnSubscribe({
+    //   channels: ["familyfeud"],
+    //   withPresence: true
+    // });
+
     this.isLoading = false;
   }
 };

@@ -50,7 +50,6 @@
 </template>
 
 <script>
-// import HelloWorld from "./components/HelloWorld";
 import FaimlyFuedViewer from "@/components/FaimlyFuedViewer";
 import { mapGetters, mapActions } from "vuex";
 

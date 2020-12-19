@@ -16,7 +16,7 @@
             Score
           </th>
           <th class="text-left">
-            <div v-if="!Host">
+            <div>
               Reveal
             </div>
           </th>
@@ -32,10 +32,10 @@
           </td>
           <td>{{ isResultDisplayed(response.score, response.revealed) }}</td>
           <td>
-            <div v-if="!Host">
+            <div>
               <v-btn
                 color="primary"
-                @click="response.revealed = !response.revealed"
+                @click="revealAnswerByIndex(index, !response.revealed)"
                 icon
                 ><div v-if="response.revealed">
                   <v-icon>mdi-eye-off</v-icon>
@@ -58,10 +58,13 @@ export default {
 
   components: {},
 
-  data: () => ({
-    testValue: "Hello Jeremy",
-    revealValue: true
-  }),
+  data() {
+    return {
+      testValue: "Hello Jeremy",
+      revealValue: true,
+      receivedMessage: this.$pnGetMessage("familyfeud", this.receptor)
+    };
+  },
 
   props: {
     Question: Object,
@@ -79,7 +82,29 @@ export default {
       } else {
         return value;
       }
+    },
+    revealAnswerByIndex(index, revealed) {
+      // console.log(index);
+      // this.Question.responses[index].revealed = revealed;
+      this.$pnPublish({
+        channel: "familyfeud",
+        message: {
+          index: index,
+          revealed: revealed
+        }
+      });
+    },
+    receptor(msg) {
+      console.log(msg.message);
+      this.Question.responses[msg.message.index].revealed = msg.message.revealed;
     }
+  },
+
+  mounted() {
+    this.$pnSubscribe({
+      channels: ["familyfeud"],
+      withPresence: true
+    });
   }
 };
 </script>
