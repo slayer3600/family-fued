@@ -25,7 +25,7 @@
               Current Question ID: {{ getCurrentQuestionKey }}
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="updateRandomQuestion"
+              <v-btn color="primary" @click="nextQuestion()"
                 >Next Question</v-btn
               >
               <v-spacer></v-spacer>
@@ -60,7 +60,7 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="findQuestion">
+                    <v-btn color="primary" @click="findQuestion(true)">
                       Load Question
                     </v-btn>
                   </v-card-actions>
@@ -69,13 +69,45 @@
             </v-card-actions>
           </v-card>
         </v-col>
+        <v-col>
+          <v-card min-height="165">
+            <v-card-title class="grey lighten-2">
+              Host Options
+            </v-card-title>
+            <v-card-text class="pa-2">
+              Host Options.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="success" @click="sendPubNubMessage('incorrectAnswer')"
+                >Incorrect Answer</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-row>
     </div>
-
+    <pre>Room Code: {{ this.getChannelName }}</pre>
+    <div class="text-center">
+      <v-dialog
+        v-model="incorrectAnswerDialog"
+        scrollable
+        persistent
+        overlay-opacity="20%"
+        max-width="250px"
+        transition="dialog-transition"
+      >
+        <v-card>
+          <v-card-title class="text-h1 red--text">
+            {{ incorrectSymbol }}
+          </v-card-title>
+        </v-card>
+      </v-dialog>
+    </div>
     <QuestionViewer
       v-if="!isLoading"
       :Question="getRandomQuestion"
       :Host="isHost"
+      ref="child"
     ></QuestionViewer>
   </div>
 </template>
@@ -96,7 +128,9 @@ export default {
       isLoading: true,
       isHost: false,
       questionIdLookup: null,
-      dialog: false
+      dialog: false,
+      incorrectAnswerDialog: false,
+      incorrectSymbol: ""
     };
   },
 
@@ -113,22 +147,90 @@ export default {
     changeScoreLocally() {
       console.log("local change");
     },
-    findQuestion() {
+    findQuestion(shoulbBePublished = false) {
       this.updateQuestionById(this.questionIdLookup);
       this.dialog = false;
+
+      if (shoulbBePublished) {
+        this.$pnPublish({
+          channel: this.getChannelName,
+          message: {
+            messageType: "updateQuestion",
+            questionId: this.questionIdLookup
+          }
+        });
+      }
     },
-    submitPubNubMessage() {
-      this.$pnPublish({
-        channel: "familyfeud",
-        message: {
-          text: "hello from family fued",
-          uuid: "jeremy123"
-        }
-      });
+    nextQuestion() {
+      let min = Math.ceil(0);
+      let max = Math.floor(Object.keys(this.getQuestions).length);
+      let randomValue = Math.floor(Math.random() * (max - min) + min);
+      this.questionIdLookup = randomValue;
+      this.findQuestion(true);
+    },
+    receptor(msg) {
+      console.log(msg.message);
+      switch (msg.message.messageType) {
+        case "revealAnswers":
+          this.$refs.child.toggleRevealed(
+            msg.message.index,
+            msg.message.revealed
+          );
+          break;
+        case "updateQuestion":
+          this.incorrectSymbol = "";
+          this.updateQuestionById(msg.message.questionId);
+          break;
+        case "correctAnswer":
+          this.$refs.child.correctAnswer();
+          break;
+        case "incorrectAnswer":
+          this.incorrectAnswer();
+          break;
+        default:
+          console.log("No action taken");
+          break;
+      }
+    },
+    playSound() {
+      console.log("Playing sound");
+      var audio = new Audio("./static/answer-incorrect.mp3");
+      audio.play();
+    },
+    incorrectAnswer() {
+      console.log("incorrectAnswer");
+
+      this.incorrectAnswerDialog = true;
+      this.incorrectSymbol += "X";
+      var audio = new Audio("./static/answer-incorrect.mp3");
+      audio.play();
+      setTimeout(() => {
+        this.incorrectAnswerDialog = false;
+      }, 1000);
+    },
+    sendPubNubMessage(messageType) {
+      console.log("sendPubNubMessage");
+      switch (messageType) {
+        case "correctAnswer":
+          this.$pnPublish({
+            channel: this.getChannelName,
+            message: {
+              messageType: messageType
+            }
+          });
+          break;
+        case "incorrectAnswer":
+          this.$pnPublish({
+            channel: this.getChannelName,
+            message: {
+              messageType: messageType
+            }
+          });
+          break;
+        default:
+          break;
+      }
     }
-    // receptor(msg) {
-    //   console.log(`sent - ${msg.message}`);
-    // }
   },
 
   computed: {
@@ -138,7 +240,8 @@ export default {
       "getQuestions",
       "getRandomQuestion",
       "getCurrentQuestionKey",
-      "getIsSettingsVisible"
+      "getIsSettingsVisible",
+      "getChannelName"
     ]),
     scoreViaState() {
       return this.$store.state.score;
@@ -160,10 +263,15 @@ export default {
     await this.getQuestionData();
     this.updateRandomQuestion();
 
-    // await this.$pnSubscribe({
-    //   channels: ["familyfeud"],
-    //   withPresence: true
-    // });
+    this.$pnSubscribe({
+      channels: [this.getChannelName],
+      withPresence: true
+    });
+
+    this.receivedMessage = this.$pnGetMessage(
+      this.getChannelName,
+      this.receptor
+    );
 
     this.isLoading = false;
   }

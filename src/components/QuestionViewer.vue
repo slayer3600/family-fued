@@ -1,21 +1,19 @@
 <template>
   <div>
-    <!-- <pre>{{ Question }}</pre> -->
-    <!-- <p>Question ID: {{ Question.questionkey }}</p> -->
     <p class="text-h3">{{ Question.question }}</p>
     <v-simple-table>
       <thead>
         <tr>
-          <th class="text-left">
+          <!-- <th class="text-left">
             Rank
-          </th>
+          </th> -->
           <th class="text-left">
             Response
           </th>
           <th class="text-left">
             Score
           </th>
-          <th class="text-left">
+          <th class="text-left" v-if="Host">
             <div>
               Reveal
             </div>
@@ -24,14 +22,14 @@
       </thead>
       <tbody>
         <tr v-for="(response, index) in Question.responses" :key="index">
-          <td>{{ index + 1 }}</td>
+          <!-- <td>{{ index + 1 }}</td> -->
           <td>
             <div>
               {{ isResultDisplayed(response.response, response.revealed) }}
             </div>
           </td>
           <td>{{ isResultDisplayed(response.score, response.revealed) }}</td>
-          <td>
+          <td v-if="Host">
             <div>
               <v-btn
                 color="primary"
@@ -53,16 +51,15 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "QuestionViewer",
-
-  components: {},
 
   data() {
     return {
       testValue: "Hello Jeremy",
-      revealValue: true,
-      receivedMessage: this.$pnGetMessage("familyfeud", this.receptor)
+      revealValue: true
     };
   },
 
@@ -87,24 +84,30 @@ export default {
       // console.log(index);
       // this.Question.responses[index].revealed = revealed;
       this.$pnPublish({
-        channel: "familyfeud",
+        channel: this.getChannelName,
         message: {
+          messageType: "revealAnswers",
           index: index,
           revealed: revealed
         }
       });
     },
-    receptor(msg) {
-      console.log(msg.message);
-      this.Question.responses[msg.message.index].revealed = msg.message.revealed;
+    toggleRevealed(index, revealed) {
+      console.log(index + " " + revealed);
+      this.Question.responses[index].revealed = revealed;
+      if (revealed) {
+        this.correctAnswer();
+      }
+    },
+    correctAnswer() {
+      console.log("correctAnswer");
+      var audio = new Audio("./static/answer-correct.mp3");
+      audio.play();
     }
   },
 
-  mounted() {
-    this.$pnSubscribe({
-      channels: ["familyfeud"],
-      withPresence: true
-    });
+  computed: {
+    ...mapGetters(["getChannelName"])
   }
 };
 </script>

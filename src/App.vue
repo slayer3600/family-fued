@@ -3,12 +3,17 @@
     <v-app-bar app color="primary" dark dense>
       <v-toolbar-title>Family Fued</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="indigo lighten-5 black--text" @click="updateRandomQuestion">
-        Next Question
-      </v-btn>
-      <v-btn @click="updateIsSettingsVisible(!getIsSettingsVisible)" icon>
-        <v-icon>mdi-cog</v-icon>
-      </v-btn>
+      <div v-if="this.getIsLoggedIn">
+        <v-btn
+          color="indigo lighten-5 black--text"
+          @click="$refs.child.nextQuestion()"
+        >
+          Next Question
+        </v-btn>
+        <v-btn @click="updateIsSettingsVisible(!getIsSettingsVisible)" icon>
+          <v-icon>mdi-cog</v-icon>
+        </v-btn>
+      </div>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
@@ -43,7 +48,9 @@
 
     <v-main>
       <v-container>
-        <FaimlyFuedViewer />
+        <!-- <Logon />
+        <FaimlyFuedViewer /> -->
+        <component :is="getActiveComponent" ref="child"></component>
       </v-container>
     </v-main>
   </v-app>
@@ -51,13 +58,15 @@
 
 <script>
 import FaimlyFuedViewer from "@/components/FaimlyFuedViewer";
+import Logon from "@/components/Logon";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "App",
 
   components: {
-    FaimlyFuedViewer
+    FaimlyFuedViewer,
+    Logon
   },
 
   data: () => ({
@@ -65,7 +74,11 @@ export default {
   }),
 
   computed: {
-    ...mapGetters(["getIsSettingsVisible"])
+    ...mapGetters([
+      "getIsSettingsVisible",
+      "getActiveComponent",
+      "getIsLoggedIn"
+    ])
   },
 
   methods: {

@@ -13,7 +13,11 @@ export default new Vuex.Store({
       question: "",
       responses: []
     },
-    isSettingsVisible: false
+    isSettingsVisible: false,
+    channelName: "",
+    UUID: "",
+    activeComponent: "Logon",
+    isLoggedIn: false
   },
   getters: {
     getScore: state => {
@@ -26,7 +30,6 @@ export default new Vuex.Store({
       return state.questions;
     },
     getRandomQuestion: state => {
-      console.log("getRandomQuestion_Vuex");
       return state.currentQuestion;
     },
     getCurrentQuestionKey: state => {
@@ -34,6 +37,18 @@ export default new Vuex.Store({
     },
     getIsSettingsVisible: state => {
       return state.isSettingsVisible;
+    },
+    getChannelName: state => {
+      return state.channelName;
+    },
+    getUUID: state => {
+      return state.UUID;
+    },
+    getActiveComponent: state => {
+      return state.activeComponent;
+    },
+    getIsLoggedIn: state => {
+      return state.isLoggedIn;
     }
   },
   mutations: {
@@ -79,6 +94,18 @@ export default new Vuex.Store({
     },
     SET_IS_SETTINGS_VISIBLE: (state, payload) => {
       state.isSettingsVisible = payload;
+    },
+    SET_CHANNEL_NAME: (state, payload) => {
+      state.channelName = payload;
+    },
+    SET_UUID: (state, payload) => {
+      state.UUID = payload;
+    },
+    SET_ACTIVE_COMPONENT: (state, payload) => {
+      state.activeComponent = payload;
+    },
+    SET_IS_LOGGED_IN: (state, payload) => {
+      state.isLoggedIn = payload;
     }
   },
   actions: {
@@ -96,6 +123,10 @@ export default new Vuex.Store({
     updateQuestionById: (context, payload) => {
       console.log("updateQuestionById_Vuex");
       context.commit("UPDATE_QUESTION_BY_ID", payload);
+    },
+    updateIsLoggedIn: (context, payload) => {
+      console.log("updateIsLoggedIn_Vuex");
+      context.commit("SET_IS_LOGGED_IN", payload);
     }
   }
 });
