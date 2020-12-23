@@ -47,7 +47,7 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container fluid>
         <!-- <Logon />
         <FaimlyFuedViewer /> -->
         <component :is="getActiveComponent" ref="child"></component>

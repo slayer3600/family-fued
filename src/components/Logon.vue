@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col>
-        <v-form v-model="newGameValid">
+        <v-form v-model="newGameValid" ref="newGameForm">
           <v-card>
             <v-card-title>New Game</v-card-title>
             <v-card-text>
@@ -10,12 +10,13 @@
                 v-model="userName"
                 label="Username"
                 :rules="validationRules.notBlank"
+                @keydown.enter.prevent="startGame(true)"
               ></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-btn
                 color="primary"
-                @click="startGame"
+                @click="startGame(true)"
                 :disabled="!newGameValid"
               >
                 Start New Game
@@ -25,7 +26,7 @@
         </v-form>
       </v-col>
       <v-col>
-        <v-form v-model="existingGameValid">
+        <v-form v-model="existingGameValid" ref="existingGameForm">
           <v-card>
             <v-card-title>Join Game</v-card-title>
             <v-card-text>
@@ -40,12 +41,13 @@
                 :rules="validationRules.lessThanFiveChars"
                 label="Room Code"
                 maxlength="5"
+                @keydown.enter.prevent="startGame(false)"
               ></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-btn
                 color="primary"
-                @click="startGame"
+                @click="startGame(false)"
                 :disabled="!existingGameValid"
               >
                 Join Game
@@ -70,7 +72,9 @@ export default {
     existingGameValid: false,
     validationRules: {
       notBlank: [v => !!v || "Cannot be blank."],
-      lessThanFiveChars: [v => v.length == 5 || "Must be exactly 5 characters."]
+      lessThanFiveChars: [
+        v => v.length == 5 || "Must be exactly five characters."
+      ]
     }
   }),
 
@@ -81,8 +85,15 @@ export default {
       "SET_CHANNEL_NAME",
       "SET_IS_LOGGED_IN"
     ]),
-    startGame() {
+    startGame(isNewGame) {
       console.log("Start Game");
+
+      if (isNewGame) {
+        if (!this.$refs.newGameForm.validate()) return;
+      } else {
+        if (!this.$refs.existingGameForm.validate()) return;
+      }
+
       if (this.roomName === "") {
         this.roomName = this.generateNewRoomNumber(5);
       }

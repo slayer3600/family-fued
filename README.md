@@ -25,3 +25,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Links
 [Family Fued](https://familyfued.chickycoop.com/)
+https://www.pubnub.com/docs/vue-javascript/pubnub-javascript-sdk

@@ -88,7 +88,6 @@
         </v-col>
       </v-row>
     </div>
-    <pre>Room Code: {{ this.getChannelName }}</pre>
     <div class="text-center">
       <v-dialog
         v-model="incorrectAnswerDialog"
@@ -105,12 +104,32 @@
         </v-card>
       </v-dialog>
     </div>
-    <QuestionViewer
-      v-if="!isLoading"
-      :Question="getRandomQuestion"
-      :Host="isHost"
-      ref="child"
-    ></QuestionViewer>
+    <v-row>
+      <v-col cols="2">
+        <pre>Room Code: {{ this.getChannelName }}</pre>
+        <v-card>
+          <v-card-title class="grey lighten-2">Players</v-card-title>
+          <v-list dense>
+            <v-list-item v-for="(user, i) in currentUsers" :key="i">
+              <v-list-item-icon>
+                <v-icon>mdi-account</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>
+                {{ user }}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
+      <v-col>
+        <QuestionViewer
+          v-if="!isLoading"
+          :Question="getRandomQuestion"
+          :Host="isHost"
+          ref="child"
+        ></QuestionViewer>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -132,7 +151,8 @@ export default {
       questionIdLookup: null,
       dialog: false,
       incorrectAnswerDialog: false,
-      incorrectSymbol: ""
+      incorrectSymbol: "",
+      currentUsers: []
     };
   },
 
@@ -232,6 +252,28 @@ export default {
         default:
           break;
       }
+    },
+    getPubNubPresence(ps) {
+      console.log(ps);
+      const instance = this.$pnGetInstance();
+      const that = this;
+      instance.hereNow(
+        {
+          channels: [this.getChannelName],
+          includeUUIDs: true,
+          includeState: true
+        },
+        function(status, response) {
+          console.log(response);
+          if (status.statusCode == 200) {
+            // console.log(response.channels[ps.channel].occupants);
+            that.currentUsers = [];
+            response.channels[ps.channel].occupants.forEach(item => {
+              that.currentUsers.push(item.uuid);
+            });
+          }
+        }
+      );
     }
   },
 
@@ -243,7 +285,8 @@ export default {
       "getRandomQuestion",
       "getCurrentQuestionKey",
       "getIsSettingsVisible",
-      "getChannelName"
+      "getChannelName",
+      "getUUID"
     ]),
     scoreViaState() {
       return this.$store.state.score;
@@ -267,6 +310,9 @@ export default {
     // instead of doing this, should put an option to wait for all players to enter
     this.nextQuestion();
 
+    const instance = this.$pnGetInstance();
+    instance.setUUID(this.getUUID);
+
     this.$pnSubscribe({
       channels: [this.getChannelName],
       withPresence: true
@@ -276,6 +322,8 @@ export default {
       this.getChannelName,
       this.receptor
     );
+
+    this.$pnGetPresence(this.getChannelName, this.getPubNubPresence);
 
     this.isLoading = false;
   }
