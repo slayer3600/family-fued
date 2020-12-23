@@ -101,7 +101,7 @@ export default {
     },
     correctAnswer() {
       console.log("correctAnswer");
-      var audio = new Audio("./static/answer-correct.mp3");
+      var audio = new Audio(require("@/assets/sounds/answer-correct.mp3"));
       audio.play();
     }
   },

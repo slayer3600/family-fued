@@ -2,31 +2,57 @@
   <div>
     <v-row>
       <v-col>
-        <v-card>
-          <v-card-title>New Game</v-card-title>
-          <v-card-text>
-            <v-text-field v-model="userName" label="Username"></v-text-field>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="startGame">
-              Start New Game
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <v-form v-model="newGameValid">
+          <v-card>
+            <v-card-title>New Game</v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="userName"
+                label="Username"
+                :rules="validationRules.notBlank"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                @click="startGame"
+                :disabled="!newGameValid"
+              >
+                Start New Game
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
       </v-col>
       <v-col>
-        <v-card>
-          <v-card-title>Join Game</v-card-title>
-          <v-card-text>
-            <v-text-field v-model="userName" label="Username"></v-text-field>
-            <v-text-field v-model="roomName" label="Room Code"></v-text-field>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="startGame">
-              Join Game
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <v-form v-model="existingGameValid">
+          <v-card>
+            <v-card-title>Join Game</v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="userName"
+                label="Username"
+                :rules="validationRules.notBlank"
+              ></v-text-field>
+              <v-text-field
+                v-model="roomName"
+                :counter="5"
+                :rules="validationRules.lessThanFiveChars"
+                label="Room Code"
+                maxlength="5"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                @click="startGame"
+                :disabled="!existingGameValid"
+              >
+                Join Game
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
       </v-col>
     </v-row>
   </div>
@@ -39,7 +65,13 @@ export default {
 
   data: () => ({
     userName: "",
-    roomName: ""
+    roomName: "",
+    newGameValid: false,
+    existingGameValid: false,
+    validationRules: {
+      notBlank: [v => !!v || "Cannot be blank."],
+      lessThanFiveChars: [v => v.length == 5 || "Must be exactly 5 characters."]
+    }
   }),
 
   methods: {

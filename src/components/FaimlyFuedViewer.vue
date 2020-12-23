@@ -78,7 +78,9 @@
               Host Options.
             </v-card-text>
             <v-card-actions>
-              <v-btn color="success" @click="sendPubNubMessage('incorrectAnswer')"
+              <v-btn
+                color="success"
+                @click="sendPubNubMessage('incorrectAnswer')"
                 >Incorrect Answer</v-btn
               >
             </v-card-actions>
@@ -194,7 +196,7 @@ export default {
     },
     playSound() {
       console.log("Playing sound");
-      var audio = new Audio("./static/answer-incorrect.mp3");
+      var audio = new Audio(require("@/assets/sounds/answer-incorrect.mp3"));
       audio.play();
     },
     incorrectAnswer() {
@@ -202,7 +204,7 @@ export default {
 
       this.incorrectAnswerDialog = true;
       this.incorrectSymbol += "X";
-      var audio = new Audio("./static/answer-incorrect.mp3");
+      var audio = new Audio(require("@/assets/sounds/answer-incorrect.mp3"));
       audio.play();
       setTimeout(() => {
         this.incorrectAnswerDialog = false;
@@ -258,10 +260,12 @@ export default {
   },
 
   async mounted() {
-    console.log("mounted");
+    // console.log("mounted");
     // this.$store.dispatch("getQuestionData");
     await this.getQuestionData();
-    this.updateRandomQuestion();
+
+    // instead of doing this, should put an option to wait for all players to enter
+    this.nextQuestion();
 
     this.$pnSubscribe({
       channels: [this.getChannelName],

@@ -83,6 +83,10 @@ export default {
 
   methods: {
     ...mapActions(["updateIsSettingsVisible", "updateRandomQuestion"])
+  },
+
+  created() {
+    document.title = "Family Fued";
   }
 };
 </script>
