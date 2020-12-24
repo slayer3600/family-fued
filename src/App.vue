@@ -1,7 +1,11 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark dense>
-      <v-toolbar-title>Family Fued</v-toolbar-title>
+      <v-toolbar-title
+        ><a href="/" class="white--text" style="text-decoration: none;"
+          >Family Fued</a
+        ></v-toolbar-title
+      >
       <v-spacer></v-spacer>
       <div v-if="this.getIsLoggedIn">
         <v-btn

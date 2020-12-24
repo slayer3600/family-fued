@@ -74,14 +74,12 @@
     <div class="text-center">
       <v-dialog
         v-model="incorrectAnswerDialog"
-        scrollable
         persistent
-        overlay-opacity="20%"
-        max-width="250px"
         transition="dialog-transition"
+        max-width="250px"
       >
         <v-card>
-          <v-card-title class="text-h1 red--text">
+          <v-card-title class="text-h1 red--text justify-center">
             {{ incorrectSymbol }}
           </v-card-title>
         </v-card>
@@ -108,9 +106,20 @@
           <v-card-title class="grey lighten-2">
             Host Options
           </v-card-title>
+          <v-card-text>
+            Strikes:
+            <div class="red--text font-weight-bold">
+              {{ incorrectSymbol }}
+            </div></v-card-text
+          >
           <v-card-actions>
-            <v-btn color="success" @click="sendPubNubMessage('incorrectAnswer')"
-              >Buzz Players</v-btn
+            <v-btn
+              color="red white--text"
+              @click="sendPubNubMessage('incorrectAnswer')"
+              >Strike
+              <v-icon dark right>
+                mdi-alpha-x-box-outline
+              </v-icon></v-btn
             >
           </v-card-actions>
         </v-card>
