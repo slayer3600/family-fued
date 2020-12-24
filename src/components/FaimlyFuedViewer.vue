@@ -69,23 +69,6 @@
             </v-card-actions>
           </v-card>
         </v-col>
-        <v-col>
-          <v-card min-height="165">
-            <v-card-title class="grey lighten-2">
-              Host Options
-            </v-card-title>
-            <v-card-text class="pa-2">
-              Host Options.
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="success"
-                @click="sendPubNubMessage('incorrectAnswer')"
-                >Incorrect Answer</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-col>
       </v-row>
     </div>
     <div class="text-center">
@@ -119,6 +102,17 @@
               </v-list-item-title>
             </v-list-item>
           </v-list>
+        </v-card>
+        <br />
+        <v-card v-if="isHost" min-height="165">
+          <v-card-title class="grey lighten-2">
+            Host Options
+          </v-card-title>
+          <v-card-actions>
+            <v-btn color="success" @click="sendPubNubMessage('incorrectAnswer')"
+              >Buzz Players</v-btn
+            >
+          </v-card-actions>
         </v-card>
       </v-col>
       <v-col>
@@ -220,10 +214,11 @@ export default {
       audio.play();
     },
     incorrectAnswer() {
-      console.log("incorrectAnswer");
-
       this.incorrectAnswerDialog = true;
-      this.incorrectSymbol += "X";
+      if (this.incorrectSymbol.length < 3) {
+        this.incorrectSymbol += "X";
+      }
+
       var audio = new Audio(require("@/assets/sounds/answer-incorrect.mp3"));
       audio.play();
       setTimeout(() => {
